@@ -34,6 +34,6 @@ interface PoolDAO {
     suspend fun getAllSelectedPoolOption(poolId: String): List<OptionTableEntity>
 
     @Transaction
-    @Query("SELECT * FROM pool_table")
+    @Query("SELECT * FROM pool_table ")
     fun getAllPoolWithOption(): LiveData<MutableList<PoolWithOption>?>?
 }

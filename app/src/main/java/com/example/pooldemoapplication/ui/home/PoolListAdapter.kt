@@ -33,6 +33,7 @@ class PoolListAdapter : RecyclerView.Adapter<PoolListAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val poolItem = poolList[position]
         holder.itemView.findViewById<TextView>(R.id.pool_name).text = poolItem.poolTableEntity!!.poolName
+        holder.itemView.findViewById<TextView>(R.id.pool_options).text = poolItem.optionTableEntity!!.joinToString { optionTableEntity -> " ${optionTableEntity.optionName}," }
     }
 
     fun setPoolData(user: List<PoolWithOption>) {
