@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">PoolDemoApplication</string>
-    <string name="title_home">Home</string>
+    <string name="title_current_polls">Current Polls</string>
     <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_history">History</string>
     <string name="title_activity_create_pool">CreatePoolActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -12,5 +12,5 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="create_pool">Create Pool</string>
+    <string name="create_pool">Create Polls</string>
 </resources>

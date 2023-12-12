@@ -52,6 +52,6 @@
         android:focusable="true"
         app:layout_constraintBottom_toTopOf="@id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_home_black_24dp" />
+        app:srcCompat="@drawable/baseline_add_chart_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

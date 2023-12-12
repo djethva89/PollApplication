@@ -7,19 +7,13 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.pooldemoapplication.ui.home.HomeFragment"
-        android:label="@string/title_home"
+        android:name="com.example.pooldemoapplication.ui.currentPolls.CurrentPollsFragment"
+        android:label="@string/title_current_polls"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.pooldemoapplication.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
-
-    <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.example.pooldemoapplication.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
+        android:name="com.example.pooldemoapplication.ui.history.HistoryFragment"
+        android:label="@string/title_history"
         tools:layout="@layout/fragment_notifications" />
 </navigation>
