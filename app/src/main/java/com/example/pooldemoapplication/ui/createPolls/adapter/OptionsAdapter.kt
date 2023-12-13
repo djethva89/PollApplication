@@ -38,7 +38,10 @@ class OptionsAdapter(
             binding.optionName.setText(option)
             binding.optionName.requestFocus()
 
-            Log.d(OptionsAdapter::class.java.name, "bind: $adapterPosition >> ${fixedOptionCount - 1}")
+            Log.d(
+                OptionsAdapter::class.java.name,
+                "bind: $adapterPosition >> ${fixedOptionCount - 1}"
+            )
             if (adapterPosition == (fixedOptionCount - 1)) {
                 binding.optionName.imeOptions = EditorInfo.IME_ACTION_DONE
             } else {
@@ -57,7 +60,13 @@ class OptionsAdapter(
 
             binding.optionName.addTextChangedListener(/* watcher = */ object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    optionsList[adapterPosition] = s.toString()
+                    if (optionsList.contains(s.toString())) {
+                        binding.optionName.error = "already exist"
+                    } else {
+                        binding.optionName.error = null
+                        optionsList[adapterPosition] = s.toString()
+                    }
+
                 }
 
                 override fun beforeTextChanged(
@@ -69,6 +78,9 @@ class OptionsAdapter(
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    if (s.isNullOrEmpty()) {
+                        binding.optionName.error = null
+                    }
                 }
             })
 

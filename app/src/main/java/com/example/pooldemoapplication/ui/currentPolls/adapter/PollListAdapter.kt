@@ -80,6 +80,10 @@ class PollListAdapter(val isHistoryView: Boolean = false, val pollsViewModel: Po
 
     }
 
+    fun getPollList(): List<PollsWithOption> {
+        return this.pollsList
+    }
+
     fun setPoolData(pollsList: List<PollsWithOption>) {
         this.pollsList = pollsList
         notifyDataSetChanged()

@@ -53,14 +53,21 @@ class CurrentPollsFragment : Fragment() {
         pollsViewModel.getPoolWithOption(requireContext()).observe(
             this.viewLifecycleOwner
         ) {
+            Log.d(
+                CurrentPollsFragment::class.java.name,
+                "bindAdapter: ${poolAdapter.getPollList().isEmpty()}"
+            )
             if (it.isNullOrEmpty()) {
-                Log.d(CurrentPollsFragment::class.java.name, "bindAdapter: ${it == null}")
                 _binding!!.poolList.visibility = View.GONE
                 _binding!!.emptyView.visibility = View.VISIBLE
             } else {
                 _binding!!.poolList.visibility = View.VISIBLE
                 _binding!!.emptyView.visibility = View.GONE
-                poolAdapter.setPoolData(it)
+
+                if (poolAdapter.getPollList().isEmpty()) {
+                    poolAdapter.setPoolData(it)
+                }
+
             }
         }
     }
