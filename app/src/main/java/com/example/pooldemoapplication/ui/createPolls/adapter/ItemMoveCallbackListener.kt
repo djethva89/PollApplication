@@ -30,7 +30,7 @@ class ItemMoveCallbackListener(val adapter: OptionsAdapter) : ItemTouchHelper.Ca
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
-            if (viewHolder is OptionsAdapter.MyViewHolder) {
+            if (viewHolder is OptionsAdapter.ViewHolder) {
                 adapter.onRowSelected(viewHolder)
             }
         }
@@ -39,7 +39,7 @@ class ItemMoveCallbackListener(val adapter: OptionsAdapter) : ItemTouchHelper.Ca
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
-        if (viewHolder is OptionsAdapter.MyViewHolder) {
+        if (viewHolder is OptionsAdapter.ViewHolder) {
             adapter.onRowClear(viewHolder)
         }
     }
@@ -53,7 +53,7 @@ class ItemMoveCallbackListener(val adapter: OptionsAdapter) : ItemTouchHelper.Ca
 
     interface Listener {
         fun onRowMoved(fromPosition: Int, toPosition: Int)
-        fun onRowSelected(itemViewHolder: OptionsAdapter.MyViewHolder)
-        fun onRowClear(itemViewHolder: OptionsAdapter.MyViewHolder)
+        fun onRowSelected(itemViewHolder: OptionsAdapter.ViewHolder)
+        fun onRowClear(itemViewHolder: OptionsAdapter.ViewHolder)
     }
 }

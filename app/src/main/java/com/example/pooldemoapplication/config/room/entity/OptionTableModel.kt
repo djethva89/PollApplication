@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.example.pooldemoapplication.model.OptionTableModelEntity
 
 @Entity(
     tableName = "option_table", foreignKeys = [ForeignKey(
@@ -16,17 +15,17 @@ import com.example.pooldemoapplication.model.OptionTableModelEntity
 )
 data class OptionTableModel(
     @ColumnInfo(name = "pool_id")
-    override var poolId: Long? = null,
+    var poolId: Long? = null,
     @ColumnInfo(name = "option_name")
-    override val optionName: String,
+    val optionName: String,
     @ColumnInfo(name = "percentage")
-    override var percentage: Int = 0,
+    var percentage: Int = 0,
     @ColumnInfo(name = "create_at")
-    override val createAt: Long
-) : OptionTableModelEntity(poolId, optionName, percentage, createAt) {
+    val createAt: Long
+) {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    override var id: Int? = null
+    var id: Int? = null
 }
 
 

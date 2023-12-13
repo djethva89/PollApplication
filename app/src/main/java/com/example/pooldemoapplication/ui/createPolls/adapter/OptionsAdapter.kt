@@ -1,104 +1,121 @@
 package com.example.pooldemoapplication.ui.createPolls.adapter
 
-import android.view.KeyEvent
+import android.annotation.SuppressLint
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.View
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.TextView.OnEditorActionListener
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pooldemoapplication.R
+import com.example.pooldemoapplication.databinding.CreateOptionRowBinding
 import java.util.Collections
 
 
-class OptionsAdapter(private val startDragListener: ItemMoveCallbackListener.OnStartDragListener) :
-    RecyclerView.Adapter<OptionsAdapter.MyViewHolder>(), ItemMoveCallbackListener.Listener {
+interface PollsListener {
+    // you can define any parameter as per your requirement
+    fun addNewItem(result: String?, position: Int)
+
+    fun remainingCount(count: Int)
+}
+
+class OptionsAdapter(
+    val pollsListener: PollsListener,
+    private val startDragListener: ItemMoveCallbackListener.OnStartDragListener,
+    val fixedOptionCount: Int
+) :
+    RecyclerView.Adapter<OptionsAdapter.ViewHolder>(), ItemMoveCallbackListener.Listener {
 
     val optionsList: MutableList<String?> = mutableListOf()
 
-    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    @SuppressLint("ClickableViewAccessibility")
+    inner class ViewHolder(private val binding: CreateOptionRowBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(option: String?) {
+            binding.optionName.setText(option)
+            binding.optionName.requestFocus()
 
-    }
+            Log.d(OptionsAdapter::class.java.name, "bind: $adapterPosition >> ${fixedOptionCount - 1}")
+            if (adapterPosition == (fixedOptionCount - 1)) {
+                binding.optionName.imeOptions = EditorInfo.IME_ACTION_DONE
+            } else {
+                binding.optionName.imeOptions = EditorInfo.IME_ACTION_NEXT
+            }
 
+            binding.ivDrag.setOnTouchListener(
+                OnTouchListener { _, motionEvent ->
+                    if (motionEvent.action == MotionEvent.ACTION_DOWN) {
+                        startDragListener.onStartDrag(this)
+                    }
+                    return@OnTouchListener true
 
-    private val differCallback = object : DiffUtil.ItemCallback<String>() {
-        override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
-            return oldItem == newItem
-        }
-
-        override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
-            return oldItem == newItem
-        }
-
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return MyViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.create_option_row,
-                parent,
-                false
+                },
             )
-        )
+
+            binding.optionName.addTextChangedListener(/* watcher = */ object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    optionsList[adapterPosition] = s.toString()
+                }
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+            })
+
+            binding.cancel.setOnClickListener {
+                optionsList.removeAt(adapterPosition)
+                pollsListener.remainingCount(optionsList.size)
+                notifyItemRemoved(adapterPosition)
+            }
+            binding.optionName.setOnEditorActionListener(
+                OnEditorActionListener { _, actionId, _ -> // Identifier of the action. This will be either the identifier you supplied,
+                    // or EditorInfo.IME_NULL if being called due to the enter key being pressed.
+                    if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                        addOption("")
+                        return@OnEditorActionListener true
+                    }
+                    // Return true if you have consumed the action, else false.
+                    false
+                })
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+
+        val binding =
+            CreateOptionRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
         return optionsList.size
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val optionItem = optionsList[position]
 
-        val optionName =
-            holder.itemView.findViewById<EditText>(R.id.option_name)
-        val cancel =
-            holder.itemView.findViewById<ImageView>(R.id.cancel)
-        val ivDrag =
-            holder.itemView.findViewById<ImageView>(R.id.iv_drag)
-        optionName.setText(optionItem)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        if (optionsList.size == position) {
-            optionName.imeOptions = EditorInfo.IME_ACTION_DONE
-
-        } else {
-            optionName.imeOptions = EditorInfo.IME_ACTION_NEXT
+        with(optionsList[holder.adapterPosition]) {
+            holder.bind(this)
         }
-
-        ivDrag.setOnTouchListener(OnTouchListener { view, motionEvent ->
-            if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-                this.startDragListener.onStartDrag(holder)
-            }
-            return@OnTouchListener true
-         })
-
-
-        cancel.setOnClickListener {
-            optionsList.removeAt(position)
-            notifyItemRemoved(position)
-        }
-        optionName.setOnEditorActionListener(
-            OnEditorActionListener { v, actionId, event -> // Identifier of the action. This will be either the identifier you supplied,
-                // or EditorInfo.IME_NULL if being called due to the enter key being pressed.
-                if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                    addOption("")
-                    return@OnEditorActionListener true
-                }
-                // Return true if you have consumed the action, else false.
-                false
-            })
     }
 
     fun addOption(options: String) {
-        if (5 > this.optionsList.size) {
+        if (fixedOptionCount > this.optionsList.size) {
             this.optionsList.add(options)
             notifyItemInserted(this.optionsList.size - 1)
+            pollsListener.addNewItem(options, this.optionsList.size)
+            pollsListener.remainingCount(this.optionsList.size)
         }
 
     }
@@ -116,9 +133,9 @@ class OptionsAdapter(private val startDragListener: ItemMoveCallbackListener.OnS
         notifyItemMoved(fromPosition, toPosition)
     }
 
-    override fun onRowSelected(itemViewHolder: MyViewHolder) {
+    override fun onRowSelected(itemViewHolder: ViewHolder) {
     }
 
-    override fun onRowClear(itemViewHolder: MyViewHolder) {
+    override fun onRowClear(itemViewHolder: ViewHolder) {
     }
 }

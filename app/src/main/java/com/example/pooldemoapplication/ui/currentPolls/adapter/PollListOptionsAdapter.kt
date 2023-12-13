@@ -1,70 +1,119 @@
 package com.example.pooldemoapplication.ui.currentPolls.adapter
 
+import android.animation.ObjectAnimator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pooldemoapplication.R
 import com.example.pooldemoapplication.config.room.entity.OptionTableModel
+import com.example.pooldemoapplication.databinding.PollOptionRowBinding
+
 
 fun interface OnOptionsClickListener {
-    fun onClick(optionIndex: Int)
+    fun onClick(newIndex: Int, oldIndex: Int)
 }
 
 class PollListOptionsAdapter(
-    private val isGivePercentage: Boolean,
+    private var oldSelectedIndex: Int = -1,
+    private var newSelectedIndex: Int = -1,
+
     private val optionsList: List<OptionTableModel>,
-    private val onClickListener: OnOptionsClickListener
+    private val onClickListener: OnOptionsClickListener,
+    val isHistoryView: Boolean
 ) :
-    RecyclerView.Adapter<PollListOptionsAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<PollListOptionsAdapter.ViewHolder>() {
 
+    inner class ViewHolder(private val binding: PollOptionRowBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(optionTableModel: OptionTableModel) {
+            binding.optionName.text = optionTableModel.optionName
 
-    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            "${optionTableModel.percentage}%".also { binding.percentage.text = it }
 
+            if (isHistoryView) {
+                binding.percentage.visibility = View.VISIBLE
+                binding.progressHorizontal.progress = optionTableModel.percentage
+                binding.ivCircle.setImageResource(R.drawable.ic_checked_circle)
+                if (optionTableModel.percentage == 100) {
+                    binding.ivCircle.visibility = View.VISIBLE
+                } else {
+                    binding.ivCircle.visibility = View.GONE
+                }
+            } else {
+                Log.d(
+                    PollListOptionsAdapter::class.java.name,
+                    "onBindViewHolder: $adapterPosition > $newSelectedIndex > $oldSelectedIndex"
+                )
+                if (newSelectedIndex != -1) {
+                    if (newSelectedIndex == adapterPosition) {
+                        binding.percentage.visibility = View.VISIBLE
+                        binding.ivCircle.visibility = View.VISIBLE
+                        binding.ivCircle.setImageResource(R.drawable.ic_checked_circle)
+                        ObjectAnimator.ofInt(
+                            binding.progressHorizontal,
+                            "progress",
+                            0,
+                            optionTableModel.percentage
+                        )
+                            .setDuration(1000).start()
+                    } else if (oldSelectedIndex != -1 && oldSelectedIndex == adapterPosition) {
+                        binding.percentage.visibility = View.VISIBLE
+                        binding.ivCircle.visibility = View.GONE
+                        ObjectAnimator.ofInt(
+                            binding.progressHorizontal,
+                            "progress",
+                            100,
+                            optionTableModel.percentage
+                        )
+                            .setDuration(1000).start()
+                    } else {
+                        binding.progressHorizontal.progress = optionTableModel.percentage
+                        binding.percentage.visibility = View.VISIBLE
+                        binding.ivCircle.visibility = View.GONE
+                    }
+                } else {
+                    binding.percentage.visibility = View.INVISIBLE
+                    binding.ivCircle.visibility = View.VISIBLE
+                    binding.ivCircle.setImageResource(R.drawable.ic_bordered_circle)
+                }
+            }
+
+            binding.root.setOnClickListener {
+                if (!isHistoryView) {
+                    val oldSelectedOption =
+                        optionsList.indexOfFirst { optionTableModel -> optionTableModel.percentage == 100 }
+                    if (oldSelectedOption != adapterPosition) {
+                        onClickListener.onClick(adapterPosition, oldSelectedOption)
+                    }
+
+                }
+
+            }
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return MyViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.poll_option_row,
-                parent,
-                false
-            )
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding =
+            PollOptionRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
         return optionsList.size
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val optionItem = optionsList[position]
-        holder.itemView.findViewById<TextView>(R.id.option_name).text = optionItem.optionName
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val percentageTextView = holder.itemView.findViewById<TextView>(R.id.percentage)
-        val circleImage = holder.itemView.findViewById<ImageView>(R.id.iv_circle)
-
-        percentageTextView.text = "${optionItem.percentage}%"
-
-        if (isGivePercentage) {
-            if (optionItem.percentage == 0) {
-                percentageTextView.visibility = View.VISIBLE
-                circleImage.visibility = View.GONE
-            } else {
-                percentageTextView.visibility = View.VISIBLE
-                circleImage.setImageResource(R.drawable.ic_checked_circle)
-            }
-        } else {
-            percentageTextView.visibility = View.INVISIBLE
-            circleImage.setImageResource(R.drawable.ic_bordered_circle)
+        with(optionsList[position]) {
+            holder.bind(this)
         }
+    }
 
-
-        holder.itemView.setOnClickListener {
-            onClickListener.onClick(position)
-        }
+    fun addNewIndex(newIndex: Int, oldIndex: Int) {
+        newSelectedIndex = newIndex
+        oldSelectedIndex = oldIndex
     }
 
 }

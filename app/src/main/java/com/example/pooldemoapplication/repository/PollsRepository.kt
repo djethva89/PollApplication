@@ -2,7 +2,6 @@ package com.example.pooldemoapplication.repository
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.pooldemoapplication.config.room.AppDataBase
 import com.example.pooldemoapplication.config.room.entity.OptionTableModel
 import com.example.pooldemoapplication.config.room.entity.PollsTableModel
@@ -22,22 +21,6 @@ class PollsRepository {
             return AppDataBase.getDBClient(context)
         }
 
-
-        fun insertPool(
-            context: Context,
-            pollsTableModel: PollsTableModel,
-        ): Long {
-
-            var id: Long = -1
-            appDataBase = initializeDB(context)
-
-            CoroutineScope(IO).launch {
-                id = appDataBase!!.poolDao().insertPool(pollsTableModel = pollsTableModel)
-            }
-
-            return id
-        }
-
         fun insertPoolWithOption(
             context: Context,
             pollsTableModel: PollsTableModel,
@@ -54,13 +37,18 @@ class PollsRepository {
 
         }
 
-        fun getPoolWithOption(context: Context): LiveData<List<PollsWithOption>?>? {
+        fun getPoolWithOption(
+            context: Context,
+            isHistoryData: Boolean? = false
+        ): LiveData<List<PollsWithOption>?>? {
             appDataBase = initializeDB(context)
 
 
-            poolTableEntity = appDataBase!!.poolDao().getAllPoolWithOption()
+            poolTableEntity =
+                appDataBase!!.poolDao().getAllPoolWithOption(isHistoryData = isHistoryData)
 
             return poolTableEntity
         }
+
     }
 }

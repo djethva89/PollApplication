@@ -1,16 +1,16 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">PoolDemoApplication</string>
     <string name="title_current_polls">Current Polls</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_history">History</string>
     <string name="title_activity_create_pool">CreatePoolActivity</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="create_pool">Create Polls</string>
+    <string name="create_pool">Create Poll</string>
+    <string name="poll_question">Poll Question</string>
+    <string name="answer_options">Answer Options</string>
+    <string name="you_can_add_4_more_options">You can add %1$d more options</string>
+    <string name="add_option">Add Option</string>
+    <string name="create">Create</string>
+    <string name="the_polling_grounds_await_your_questions">The Polling Grounds Await Your Questions</string>
+    <string name="no_history_available_contribute_to_polls_and_see_your_journey_here">No History Available. Contribute to Polls and See Your Journey Here.</string>
+    <string name="ask_a_question">Ask a question</string>
 </resources>

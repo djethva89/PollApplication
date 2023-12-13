@@ -2,7 +2,6 @@ package com.example.pooldemoapplication
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -10,7 +9,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.pooldemoapplication.databinding.ActivityMainBinding
-import com.example.pooldemoapplication.ui.createPolls.ui.login.CreatePoolActivity
+import com.example.pooldemoapplication.ui.createPolls.ui.CreatePollsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
-        supportActionBar!!.hide();
+        supportActionBar!!.hide()
         val navView: BottomNavigationView = binding.navView
 
         val navHostFragment =
@@ -33,15 +32,14 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_current_pools,  R.id.navigation_history
+                R.id.navigation_home, R.id.navigation_history
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
         binding.floatingActionButton.setOnClickListener {
-            Toast.makeText(this, "You click me!", Toast.LENGTH_SHORT).show()
-            this.startActivity(Intent(this, CreatePoolActivity::class.java))
+            this.startActivity(Intent(this, CreatePollsActivity::class.java))
         }
     }
 }

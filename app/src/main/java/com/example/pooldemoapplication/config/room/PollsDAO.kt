@@ -1,7 +1,6 @@
 package com.example.pooldemoapplication.config.room
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -27,10 +26,7 @@ interface PollsDAO {
     }
 
     @Transaction
-    @Query("SELECT * FROM pool_table where is_give_percentage = 0 ORDER BY create_at DESC")
-    fun getAllPoolWithOption(): LiveData<List<PollsWithOption>?>?
+    @Query("SELECT * FROM pool_table where is_give_percentage = :isHistoryData ORDER BY create_at DESC")
+    fun getAllPoolWithOption(isHistoryData: Boolean? = false): LiveData<List<PollsWithOption>?>?
 
-    @Transaction
-    @Query("SELECT * FROM pool_table where is_give_percentage = 1 ORDER BY create_at DESC")
-    fun getAllHistory(): LiveData<List<PollsWithOption>?>?
 }

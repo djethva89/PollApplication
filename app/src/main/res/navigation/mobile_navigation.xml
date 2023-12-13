@@ -9,11 +9,11 @@
         android:id="@+id/navigation_home"
         android:name="com.example.pooldemoapplication.ui.currentPolls.CurrentPollsFragment"
         android:label="@string/title_current_polls"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_current_polls" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_history"
         android:name="com.example.pooldemoapplication.ui.history.HistoryFragment"
         android:label="@string/title_history"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_history" />
 </navigation>
