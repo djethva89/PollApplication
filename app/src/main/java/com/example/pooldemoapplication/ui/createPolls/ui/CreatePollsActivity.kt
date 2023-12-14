@@ -44,6 +44,7 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
             binding.labelAnswerQuestionHint.text = resources.getString(
                 R.string.you_can_add_4_more_options, it
             )
+            binding.addOption.isEnabled = it != 0
         }
 
         bindAdapter()
@@ -64,7 +65,7 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
     // Handle all clicks
     private fun handleClicks() {
         binding.addOption.setOnClickListener {
-            optionsAdapter.addOption("")
+            optionsAdapter.addOption(context = it.context)
         }
         binding.create.setOnClickListener {
             createValidation()

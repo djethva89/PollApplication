@@ -2,20 +2,17 @@ package com.example.pooldemoapplication.ui.createPolls.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView.OnEditorActionListener
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pooldemoapplication.config.utils.MyUtil
 import com.example.pooldemoapplication.databinding.CreateOptionRowBinding
 import java.util.Collections
 
@@ -42,11 +39,6 @@ class OptionsAdapter(
         fun bind(option: String?) {
             binding.optionName.setText(option)
             binding.optionName.requestFocus()
-
-            Log.d(
-                OptionsAdapter::class.java.name,
-                "bind: $adapterPosition >> ${fixedOptionCount - 1}"
-            )
             if (adapterPosition == (fixedOptionCount - 1)) {
                 binding.optionName.imeOptions = EditorInfo.IME_ACTION_DONE
             } else {
@@ -56,7 +48,7 @@ class OptionsAdapter(
             binding.ivDrag.setOnTouchListener(
                 OnTouchListener { v, motionEvent ->
                     if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-                        vibrate(v.context)
+                        MyUtil.vibrate(v.context)
                         startDragListener.onStartDrag(this)
                     }
                     return@OnTouchListener true
@@ -66,7 +58,7 @@ class OptionsAdapter(
 
             binding.optionName.addTextChangedListener(/* watcher = */ object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    if (optionsList.contains(s.toString())) {
+                    if (!s.isNullOrEmpty() && optionsList.contains(s.toString())) {
                         binding.optionName.error = "already exist"
                     } else {
                         binding.optionName.error = null
@@ -91,15 +83,19 @@ class OptionsAdapter(
             })
 
             binding.cancel.setOnClickListener {
-                optionsList.removeAt(adapterPosition)
-                pollsListener.remainingCount(optionsList.size)
-                notifyItemRemoved(adapterPosition)
+
+                MyUtil.alertDialog(binding.root.context) { _, _ ->
+                    optionsList.removeAt(adapterPosition)
+                    pollsListener.remainingCount(optionsList.size)
+                    notifyItemRemoved(adapterPosition)
+                }
+
             }
             binding.optionName.setOnEditorActionListener(
-                OnEditorActionListener { _, actionId, _ -> // Identifier of the action. This will be either the identifier you supplied,
+                OnEditorActionListener { view, actionId, _ -> // Identifier of the action. This will be either the identifier you supplied,
                     // or EditorInfo.IME_NULL if being called due to the enter key being pressed.
                     if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                        addOption("")
+                        addOption(context = view.context)
                         return@OnEditorActionListener true
                     }
                     // Return true if you have consumed the action, else false.
@@ -128,12 +124,14 @@ class OptionsAdapter(
         }
     }
 
-    fun addOption(options: String) {
+    fun addOption(context: Context) {
         if (fixedOptionCount > this.optionsList.size) {
-            this.optionsList.add(options)
+            this.optionsList.add("")
             notifyItemInserted(this.optionsList.size - 1)
-            pollsListener.addNewItem(options, this.optionsList.size)
+            pollsListener.addNewItem("", this.optionsList.size)
             pollsListener.remainingCount(this.optionsList.size)
+        } else {
+            Toast.makeText(context, "You have reached option limit.", Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -157,23 +155,4 @@ class OptionsAdapter(
     override fun onRowClear(itemViewHolder: ViewHolder) {
     }
 
-    fun vibrate(context: Context) {
-        val vib = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-
-        } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vib.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            //deprecated in API 26
-            @Suppress("DEPRECATION")
-            vib.vibrate(200)
-        }
-    }
 }

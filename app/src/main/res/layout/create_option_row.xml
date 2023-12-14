@@ -4,38 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/activity_horizontal_margin">
+    android:layout_marginHorizontal="@dimen/activity_horizontal_margin">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_drag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        app:layout_constraintBottom_toBottomOf="@+id/option_name"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/baseline_drag_handle_24" />
-
+        app:layout_constraintTop_toTopOf="@+id/option_name"
+        app:srcCompat="@drawable/baseline_drag_handle_24"
+        app:tint="@color/icon_color" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/iv_drag"
+        app:layout_constraintBottom_toBottomOf="@+id/option_name"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/iv_drag"
-        app:srcCompat="@drawable/baseline_cancel_24" />
+        app:layout_constraintTop_toTopOf="@+id/option_name"
+        app:srcCompat="@drawable/baseline_cancel_24"
+        app:tint="@color/delete_icon_color" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/option_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:inputType="text"
         android:maxLines="1"
-        app:layout_constraintBottom_toBottomOf="@id/iv_drag"
+        android:minHeight="@dimen/_48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cancel"
-        app:layout_constraintStart_toEndOf="@id/iv_drag"
-        app:layout_constraintTop_toTopOf="@id/iv_drag"
+        app:layout_constraintStart_toEndOf="@+id/iv_drag"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Option Name" />
 
 
