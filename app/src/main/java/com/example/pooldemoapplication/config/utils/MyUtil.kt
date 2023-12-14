@@ -42,7 +42,7 @@ class MyUtil {
             builder
                 .setMessage(context.getString(R.string.are_you_sure_you_want_to_remove))
                 .setPositiveButton(context.getString(R.string.delete), onClickListener)
-                .setNegativeButton(context.getString(R.string.no)) { dialogInterface, i ->
+                .setNegativeButton(context.getString(R.string.no)) { dialogInterface, _ ->
                     dialogInterface.dismiss()
                 }
 

@@ -14,7 +14,7 @@ import androidx.room.PrimaryKey
     )]
 )
 data class OptionTableModel(
-    @ColumnInfo(name = "pool_id")
+    @ColumnInfo(name = "pool_id", index = true)
     var poolId: Long? = null,
     @ColumnInfo(name = "option_name")
     val optionName: String,

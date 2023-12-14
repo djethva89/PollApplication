@@ -35,7 +35,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/create_pool"
+                android:text="@string/create_poll"
                 android:textColor="@color/title_text"
                 android:textSize="@dimen/_22sp"
                 android:textStyle="bold" />
@@ -68,7 +68,7 @@
 
 
         <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/pool_question"
+            android:id="@+id/poll_question"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/ask_a_question"

@@ -47,8 +47,8 @@ class CurrentPollsFragment : Fragment() {
 
     private fun bindAdapter(pollsViewModel: PollsViewModel) {
         poolAdapter = PollListAdapter(pollsViewModel = pollsViewModel)
-        _binding!!.poolList.adapter = poolAdapter
-        _binding!!.poolList.layoutManager = LinearLayoutManager(requireContext())
+        _binding!!.pollList.adapter = poolAdapter
+        _binding!!.pollList.layoutManager = LinearLayoutManager(requireContext())
         getCurrentPollData()
     }
 
@@ -74,12 +74,12 @@ class CurrentPollsFragment : Fragment() {
     }
 
     private fun showEmptyScreen() {
-        _binding!!.poolList.visibility = View.GONE
+        _binding!!.pollList.visibility = View.GONE
         _binding!!.emptyView.visibility = View.VISIBLE
     }
 
     private fun hideEmptyScreen() {
-        _binding!!.poolList.visibility = View.VISIBLE
+        _binding!!.pollList.visibility = View.VISIBLE
         _binding!!.emptyView.visibility = View.GONE
     }
 }

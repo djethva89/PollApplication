@@ -11,7 +11,7 @@ import com.example.pooldemoapplication.R
 import com.example.pooldemoapplication.config.room.entity.OptionTableModel
 import com.example.pooldemoapplication.config.room.entity.PollsTableModel
 import com.example.pooldemoapplication.config.utils.Constant.Companion.fixedOptionCount
-import com.example.pooldemoapplication.databinding.ActivityCreatePoolBinding
+import com.example.pooldemoapplication.databinding.ActivityCreatePollBinding
 import com.example.pooldemoapplication.ui.createPolls.adapter.ItemMoveCallbackListener
 import com.example.pooldemoapplication.ui.createPolls.adapter.OptionsAdapter
 import com.example.pooldemoapplication.ui.createPolls.adapter.PollsListener
@@ -21,7 +21,7 @@ import com.example.pooldemoapplication.viewmodel.PollsViewModel
 
 class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStartDragListener {
 
-    private lateinit var binding: ActivityCreatePoolBinding
+    private lateinit var binding: ActivityCreatePollBinding
 
     //For Drag-Drop item on recyclerview
     private lateinit var touchHelper: ItemTouchHelper
@@ -36,7 +36,7 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
 
         createPollsViewModel = ViewModelProvider(this)[CreatePollsViewModel::class.java]
         pollsViewModel = ViewModelProvider(this)[PollsViewModel::class.java]
-        binding = ActivityCreatePoolBinding.inflate(layoutInflater)
+        binding = ActivityCreatePollBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         pollsViewModel.clearPollList()
@@ -93,7 +93,7 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
     private fun createValidation() {
         val optionCount = optionsAdapter.optionsList.count { s: String? -> s!!.isNotEmpty() }
 
-        if (binding.poolQuestion.text!!.isBlank()) {
+        if (binding.pollQuestion.text!!.isBlank()) {
             Toast.makeText(this, "Please enter poll options!", Toast.LENGTH_SHORT).show()
         } else if (2 > optionCount) {
             Toast.makeText(
@@ -101,7 +101,7 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
             ).show()
         } else {
             createPolls(
-                poolName = binding.poolQuestion.run { binding.poolQuestion.text.toString() },
+                poolName = binding.pollQuestion.run { binding.pollQuestion.text.toString() },
                 optionsAdapter.optionsList
             )
         }

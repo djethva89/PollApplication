@@ -17,7 +17,7 @@ class PollListAdapter(val isHistoryView: Boolean = false, val pollsViewModel: Po
     inner class ViewHolder(private val binding: PollRowBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(pollsWithOption: PollsWithOption) {
-            binding.poolName.text =
+            binding.pollName.text =
                 pollsWithOption.pollsTableModel!!.poolName
 
             val adapter = PollListOptionsAdapter(
@@ -92,12 +92,6 @@ class PollListAdapter(val isHistoryView: Boolean = false, val pollsViewModel: Po
         return this.pollsList
     }
 
-    fun clear(){
-        with(this.pollsList) {
-            clear()
-            notifyDataSetChanged()
-        }
-    }
     fun setPoolData(pollsList: List<PollsWithOption>) {
         Log.d(
             CurrentPollsFragment::class.java.name,

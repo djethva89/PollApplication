@@ -3,8 +3,8 @@
     <string name="title_current_polls">Current Polls</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_history">History</string>
-    <string name="title_activity_create_pool">CreatePoolActivity</string>
-    <string name="create_pool">Create Poll</string>
+    <string name="title_activity_create_poll">CreatePoolActivity</string>
+    <string name="create_poll">Create Poll</string>
     <string name="poll_question">Poll Question</string>
     <string name="answer_options">Answer Options</string>
     <string name="you_can_add_4_more_options">You can add %1$d more options</string>

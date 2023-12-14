@@ -25,7 +25,7 @@
         <activity
             android:name=".ui.createPolls.ui.CreatePollsActivity"
             android:exported="false"
-            android:label="@string/title_activity_create_pool" />
+            android:label="@string/title_activity_create_poll" />
     </application>
 
 </manifest>
