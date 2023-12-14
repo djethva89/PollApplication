@@ -1,6 +1,7 @@
 package com.example.pooldemoapplication.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -9,6 +10,7 @@ import com.example.pooldemoapplication.config.room.entity.OptionTableModel
 import com.example.pooldemoapplication.config.room.entity.PollsTableModel
 import com.example.pooldemoapplication.config.room.entity.PollsWithOption
 import com.example.pooldemoapplication.repository.PollsRepository
+import com.example.pooldemoapplication.ui.currentPolls.CurrentPollsFragment
 
 class PollsViewModel : ViewModel() {
 
@@ -44,7 +46,10 @@ class PollsViewModel : ViewModel() {
         isHistoryData: Boolean? = false
     ): LiveData<List<PollsWithOption>?> {
         pollsList = PollsRepository.getPoolWithOption(context, isHistoryData = isHistoryData)!!
-
+        Log.d(
+            CurrentPollsFragment::class.java.name,
+            "bindAdapter View Model: ${pollsList?.value?.isEmpty()}"
+        )
         return pollsList!!
     }
 }

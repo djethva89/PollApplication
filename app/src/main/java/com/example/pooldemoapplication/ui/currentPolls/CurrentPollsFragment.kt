@@ -23,6 +23,7 @@ class CurrentPollsFragment : Fragment() {
 
     private val binding get() = _binding!!
 
+    private var poolAdapter: PollListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,8 +34,7 @@ class CurrentPollsFragment : Fragment() {
         pollsViewModel = ViewModelProvider(this)[PollsViewModel::class.java]
         _binding = FragmentCurrentPollsBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        bindAdapter(pollsViewModel)
+//        bindAdapter(pollsViewModel)
         return root
     }
 
@@ -43,10 +43,24 @@ class CurrentPollsFragment : Fragment() {
         _binding = null
     }
 
+    override fun onResume() {
+        super.onResume()
+        bindAdapter(pollsViewModel)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(
+            CurrentPollsFragment::class.java.name,
+            "bindAdapter onResume: "
+        )
+        if (poolAdapter != null) {
+            poolAdapter!!.clear()
+        }
+    }
+
     private fun bindAdapter(pollsViewModel: PollsViewModel) {
-
-        val poolAdapter = PollListAdapter(pollsViewModel = pollsViewModel)
-
+        poolAdapter = PollListAdapter(pollsViewModel = pollsViewModel)
         _binding!!.poolList.adapter = poolAdapter
         _binding!!.poolList.layoutManager = LinearLayoutManager(requireContext())
 
@@ -55,7 +69,9 @@ class CurrentPollsFragment : Fragment() {
         ) {
             Log.d(
                 CurrentPollsFragment::class.java.name,
-                "bindAdapter: ${poolAdapter.getPollList().isEmpty()}"
+                "bindAdapter Poll Fragment 1: ${it.isNullOrEmpty()} :: ${
+                    poolAdapter?.getPollList()?.isEmpty()
+                }"
             )
             if (it.isNullOrEmpty()) {
                 _binding!!.poolList.visibility = View.GONE
@@ -64,8 +80,13 @@ class CurrentPollsFragment : Fragment() {
                 _binding!!.poolList.visibility = View.VISIBLE
                 _binding!!.emptyView.visibility = View.GONE
 
-                if (poolAdapter.getPollList().isEmpty()) {
-                    poolAdapter.setPoolData(it)
+                Log.d(
+                    CurrentPollsFragment::class.java.name,
+                    "bindAdapter Poll Fragment 2: ${poolAdapter?.getPollList()?.isEmpty()}"
+                )
+
+                if (poolAdapter?.getPollList()!!.isEmpty()) {
+                    poolAdapter?.setPoolData(it)
                 }
 
             }

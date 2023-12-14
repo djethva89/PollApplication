@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pooldemoapplication.config.room.entity.PollsWithOption
 import com.example.pooldemoapplication.databinding.PollRowBinding
+import com.example.pooldemoapplication.ui.currentPolls.CurrentPollsFragment
 import com.example.pooldemoapplication.viewmodel.PollsViewModel
 
 class PollListAdapter(val isHistoryView: Boolean = false, val pollsViewModel: PollsViewModel) :
     RecyclerView.Adapter<PollListAdapter.ViewHolder>() {
 
-    private var pollsList = emptyList<PollsWithOption>()
+    private var pollsList = mutableListOf<PollsWithOption>()
 
     inner class ViewHolder(private val binding: PollRowBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -28,7 +29,7 @@ class PollListAdapter(val isHistoryView: Boolean = false, val pollsViewModel: Po
 
                     Log.d(
                         PollListOptionsAdapter::class.java.name,
-                        "onBindViewHolder: $newIndex :: $oldIndex"
+                        "onBindViewHolder adapter 1: $newIndex :: $oldIndex"
                     )
 
                     (binding.pollsOptions.adapter as PollListOptionsAdapter).addNewIndex(
@@ -38,11 +39,18 @@ class PollListAdapter(val isHistoryView: Boolean = false, val pollsViewModel: Po
                     pollsList[adapterPosition].pollsTableModel!!.newIndex = newIndex
                     pollsList[adapterPosition].pollsTableModel!!.oldIndex = oldIndex
                     if (oldIndex == -1) {
-
+                        Log.d(
+                            PollListOptionsAdapter::class.java.name,
+                            "onBindViewHolder adapter 2: $newIndex :: $oldIndex"
+                        )
                         pollsList[adapterPosition].pollsTableModel!!.isGivePercentage = true
                         pollsList[adapterPosition].optionTableEntity!![newIndex].percentage = 100
                         notifyItemChanged(adapterPosition)
                     } else {
+                        Log.d(
+                            PollListOptionsAdapter::class.java.name,
+                            "onBindViewHolder adapter 3: $newIndex :: $oldIndex"
+                        )
                         pollsList[adapterPosition].optionTableEntity!![newIndex].percentage = 100
                         pollsList[adapterPosition].optionTableEntity!![oldIndex].percentage = 0
 
@@ -84,9 +92,23 @@ class PollListAdapter(val isHistoryView: Boolean = false, val pollsViewModel: Po
         return this.pollsList
     }
 
+    fun clear(){
+        with(this.pollsList) {
+            clear()
+            notifyDataSetChanged()
+        }
+    }
     fun setPoolData(pollsList: List<PollsWithOption>) {
-        this.pollsList = pollsList
-        notifyDataSetChanged()
+        Log.d(
+            CurrentPollsFragment::class.java.name,
+            "bindAdapter Adapter: ${pollsList.isEmpty()}"
+        )
+        with(this.pollsList) {
+            clear()
+            addAll(pollsList)
+            notifyDataSetChanged()
+        }
+
     }
 
 }
