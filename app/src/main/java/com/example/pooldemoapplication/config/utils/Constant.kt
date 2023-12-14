@@ -1,8 +1,8 @@
 package com.example.pooldemoapplication.config.utils
 
 class Constant {
-    companion object{
-        val  DATABASE_NAME = "APP_DATABASE"
-        val fixedOptionCount = 5
+    companion object {
+        const val DATABASE_NAME: String = "APP_DATABASE"
+        const val fixedOptionCount: Int = 5
     }
 }

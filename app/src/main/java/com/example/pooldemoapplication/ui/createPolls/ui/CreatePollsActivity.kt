@@ -22,9 +22,10 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
 
     private lateinit var binding: ActivityCreatePoolBinding
 
-    //For Drag-Drop Item
+    //For Drag-Drop item on recyclerview
     private lateinit var touchHelper: ItemTouchHelper
 
+    //For fetching history data from database
     private lateinit var pollsViewModel: PollsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,46 +36,46 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
 
         pollsViewModel = ViewModelProvider(this)[PollsViewModel::class.java]
 
-        binding.labelAnswerQuestionHint.text =
-            resources.getString(
-                R.string.you_can_add_4_more_options,
-                fixedOptionCount
+        pollsViewModel.optionCount.observe(this) {
+            binding.labelAnswerQuestionHint.text = resources.getString(
+                R.string.you_can_add_4_more_options, it
             )
-        val pollsListener = object : PollsListener {
-            override fun addNewItem(result: String?, position: Int) {
-                if (position != 0)
-                    binding.questions.smoothScrollToPosition(position)
-            }
-
-            override fun remainingCount(count: Int) {
-                binding.labelAnswerQuestionHint.text =
-                    resources.getString(
-                        R.string.you_can_add_4_more_options,
-                        fixedOptionCount - count
-                    )
-            }
         }
+
         val optionsAdapter = OptionsAdapter(
             pollsListener = pollsListener,
             startDragListener = this,
             fixedOptionCount = fixedOptionCount
         )
         bindAdapter(optionsAdapter)
+        handleClicks(optionsAdapter)
+    }
 
+    // get callback when new item and and remaining option count
+    private val pollsListener = object : PollsListener {
+        override fun addNewItem(result: String?, position: Int) {
+            if (position != 0) binding.questions.smoothScrollToPosition(position)
+        }
+
+        override fun remainingCount(count: Int) {
+            pollsViewModel.updateOptionCount(fixedOptionCount - count)
+        }
+    }
+
+    // Handle all clicks
+    private fun handleClicks(optionsAdapter: OptionsAdapter) {
         binding.addOption.setOnClickListener {
             optionsAdapter.addOption("")
         }
         binding.create.setOnClickListener {
-
             createValidation(optionsAdapter)
-
         }
         binding.backNavigation.setOnClickListener {
             finish()
         }
     }
 
-
+    // Bind history list adapter
     private fun bindAdapter(optionsAdapter: OptionsAdapter) {
         val callback: ItemTouchHelper.Callback = ItemMoveCallbackListener(optionsAdapter)
         touchHelper = ItemTouchHelper(callback)
@@ -83,6 +84,7 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
         binding.questions.layoutManager = LinearLayoutManager(this)
     }
 
+    // Add poll validation
     private fun createValidation(optionsAdapter: OptionsAdapter) {
         val optionCount = optionsAdapter.optionsList.count { s: String? -> s!!.isNotEmpty() }
 
@@ -90,9 +92,7 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
             Toast.makeText(this, "Please enter poll options!", Toast.LENGTH_SHORT).show()
         } else if (2 > optionCount) {
             Toast.makeText(
-                this,
-                "At list two options is required for create polls!",
-                Toast.LENGTH_SHORT
+                this, "At list two options is required for create polls!", Toast.LENGTH_SHORT
             ).show()
         } else {
             createPolls(
@@ -102,27 +102,23 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
         }
     }
 
+    // New poll adding on database
     private fun createPolls(poolName: String, optionsList: MutableList<String?>) {
 
-        val poolEntity =
-            PollsTableModel(
-                poolName = poolName,
-                createAt = System.currentTimeMillis()
-            )
+        val poolEntity = PollsTableModel(
+            poolName = poolName, createAt = System.currentTimeMillis()
+        )
 
         val optionList = optionsList.filter {
             return@filter !it.isNullOrEmpty()
         }.map {
             OptionTableModel(
-                optionName = it!!,
-                createAt = poolEntity.createAt
+                optionName = it!!, createAt = poolEntity.createAt
             )
         }
 
         pollsViewModel.insertPoolWithOption(
-            context = this,
-            pollsTableModel = poolEntity,
-            optionTableEntity = optionList
+            context = this, pollsTableModel = poolEntity, optionTableEntity = optionList
         ).let {
             finish()
         }

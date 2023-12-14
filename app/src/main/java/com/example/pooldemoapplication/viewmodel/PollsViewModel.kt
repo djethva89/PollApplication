@@ -4,17 +4,28 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.pooldemoapplication.config.room.entity.OptionTableModel
 import com.example.pooldemoapplication.config.room.entity.PollsTableModel
 import com.example.pooldemoapplication.config.room.entity.PollsWithOption
+import com.example.pooldemoapplication.config.utils.Constant
 import com.example.pooldemoapplication.repository.PollsRepository
 import com.example.pooldemoapplication.ui.currentPolls.CurrentPollsFragment
 
 class PollsViewModel : ViewModel() {
 
     var pollsList: LiveData<List<PollsWithOption>?>? = null
+
+    private val _optionCount = MutableLiveData<Int>().apply {
+        value = Constant.fixedOptionCount
+    }
+    val optionCount: LiveData<Int> = _optionCount
+
+    fun updateOptionCount(count: Int) {
+        _optionCount.value = count
+    }
 
     fun insertPoolWithOption(
         context: Context,
