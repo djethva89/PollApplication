@@ -15,6 +15,7 @@ import com.example.pooldemoapplication.databinding.ActivityCreatePoolBinding
 import com.example.pooldemoapplication.ui.createPolls.adapter.ItemMoveCallbackListener
 import com.example.pooldemoapplication.ui.createPolls.adapter.OptionsAdapter
 import com.example.pooldemoapplication.ui.createPolls.adapter.PollsListener
+import com.example.pooldemoapplication.ui.createPolls.viewmodel.CreatePollsViewModel
 import com.example.pooldemoapplication.viewmodel.PollsViewModel
 
 
@@ -26,29 +27,27 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
     private lateinit var touchHelper: ItemTouchHelper
 
     //For fetching history data from database
+    private lateinit var createPollsViewModel: CreatePollsViewModel
     private lateinit var pollsViewModel: PollsViewModel
 
+    private lateinit var optionsAdapter: OptionsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        createPollsViewModel = ViewModelProvider(this)[CreatePollsViewModel::class.java]
+        pollsViewModel = ViewModelProvider(this)[PollsViewModel::class.java]
         binding = ActivityCreatePoolBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        pollsViewModel = ViewModelProvider(this)[PollsViewModel::class.java]
-
-        pollsViewModel.optionCount.observe(this) {
+        pollsViewModel.clearPollList()
+        createPollsViewModel.optionCount.observe(this) {
             binding.labelAnswerQuestionHint.text = resources.getString(
                 R.string.you_can_add_4_more_options, it
             )
         }
 
-        val optionsAdapter = OptionsAdapter(
-            pollsListener = pollsListener,
-            startDragListener = this,
-            fixedOptionCount = fixedOptionCount
-        )
-        bindAdapter(optionsAdapter)
-        handleClicks(optionsAdapter)
+        bindAdapter()
+        handleClicks()
     }
 
     // get callback when new item and and remaining option count
@@ -58,17 +57,17 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
         }
 
         override fun remainingCount(count: Int) {
-            pollsViewModel.updateOptionCount(fixedOptionCount - count)
+            createPollsViewModel.updateOptionCount(fixedOptionCount - count)
         }
     }
 
     // Handle all clicks
-    private fun handleClicks(optionsAdapter: OptionsAdapter) {
+    private fun handleClicks() {
         binding.addOption.setOnClickListener {
             optionsAdapter.addOption("")
         }
         binding.create.setOnClickListener {
-            createValidation(optionsAdapter)
+            createValidation()
         }
         binding.backNavigation.setOnClickListener {
             finish()
@@ -76,7 +75,12 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
     }
 
     // Bind history list adapter
-    private fun bindAdapter(optionsAdapter: OptionsAdapter) {
+    private fun bindAdapter() {
+        optionsAdapter = OptionsAdapter(
+            pollsListener = pollsListener,
+            startDragListener = this,
+            fixedOptionCount = fixedOptionCount
+        )
         val callback: ItemTouchHelper.Callback = ItemMoveCallbackListener(optionsAdapter)
         touchHelper = ItemTouchHelper(callback)
         touchHelper.attachToRecyclerView(binding.questions)
@@ -85,14 +89,14 @@ class CreatePollsActivity : AppCompatActivity(), ItemMoveCallbackListener.OnStar
     }
 
     // Add poll validation
-    private fun createValidation(optionsAdapter: OptionsAdapter) {
+    private fun createValidation() {
         val optionCount = optionsAdapter.optionsList.count { s: String? -> s!!.isNotEmpty() }
 
         if (binding.poolQuestion.text!!.isBlank()) {
             Toast.makeText(this, "Please enter poll options!", Toast.LENGTH_SHORT).show()
         } else if (2 > optionCount) {
             Toast.makeText(
-                this, "At list two options is required for create polls!", Toast.LENGTH_SHORT
+                this, "At list two options is required for create new polls!", Toast.LENGTH_SHORT
             ).show()
         } else {
             createPolls(

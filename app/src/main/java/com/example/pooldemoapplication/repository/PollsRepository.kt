@@ -11,7 +11,6 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 
 class PollsRepository {
-
     companion object {
         private var appDataBase: AppDataBase? = null
 
@@ -42,7 +41,6 @@ class PollsRepository {
             isHistoryData: Boolean? = false
         ): LiveData<List<PollsWithOption>?>? {
             appDataBase = initializeDB(context)
-
 
             poolTableEntity =
                 appDataBase!!.poolDao().getAllPoolWithOption(isHistoryData = isHistoryData)

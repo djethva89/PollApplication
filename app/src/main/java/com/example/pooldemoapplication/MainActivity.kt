@@ -2,7 +2,6 @@ package com.example.pooldemoapplication
 
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -23,8 +22,12 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.hide()
-        val navView: BottomNavigationView = binding.navView
 
+        setUpNavigation()
+        handleClicks()
+    }
+
+    private fun setUpNavigation() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
         val navController = navHostFragment.navController
@@ -36,8 +39,10 @@ class MainActivity : AppCompatActivity() {
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        binding.navView.setupWithNavController(navController)
+    }
 
+    private fun handleClicks() {
         binding.floatingActionButton.setOnClickListener {
             this.startActivity(Intent(this, CreatePollsActivity::class.java))
         }

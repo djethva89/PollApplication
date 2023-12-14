@@ -1,7 +1,6 @@
 package com.example.pooldemoapplication.ui.currentPolls
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,7 @@ class CurrentPollsFragment : Fragment() {
 
     private val binding get() = _binding!!
 
-    private var poolAdapter: PollListAdapter? = null
+    private lateinit var poolAdapter: PollListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,9 +32,7 @@ class CurrentPollsFragment : Fragment() {
 
         pollsViewModel = ViewModelProvider(this)[PollsViewModel::class.java]
         _binding = FragmentCurrentPollsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-//        bindAdapter(pollsViewModel)
-        return root
+        return binding.root
     }
 
     override fun onDestroyView() {
@@ -48,48 +45,41 @@ class CurrentPollsFragment : Fragment() {
         bindAdapter(pollsViewModel)
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.d(
-            CurrentPollsFragment::class.java.name,
-            "bindAdapter onResume: "
-        )
-        if (poolAdapter != null) {
-            poolAdapter!!.clear()
-        }
-    }
-
     private fun bindAdapter(pollsViewModel: PollsViewModel) {
         poolAdapter = PollListAdapter(pollsViewModel = pollsViewModel)
         _binding!!.poolList.adapter = poolAdapter
         _binding!!.poolList.layoutManager = LinearLayoutManager(requireContext())
+        getCurrentPollData()
+    }
 
-        pollsViewModel.getPoolWithOption(requireContext()).observe(
-            this.viewLifecycleOwner
-        ) {
-            Log.d(
-                CurrentPollsFragment::class.java.name,
-                "bindAdapter Poll Fragment 1: ${it.isNullOrEmpty()} :: ${
-                    poolAdapter?.getPollList()?.isEmpty()
-                }"
+    private fun getCurrentPollData() {
+        with(pollsViewModel) {
+            clearPollList()
+            getPoolWithOption(
+                requireContext(),
+                viewLifecycleOwner = viewLifecycleOwner
             )
-            if (it.isNullOrEmpty()) {
-                _binding!!.poolList.visibility = View.GONE
-                _binding!!.emptyView.visibility = View.VISIBLE
-            } else {
-                _binding!!.poolList.visibility = View.VISIBLE
-                _binding!!.emptyView.visibility = View.GONE
+            pollWithOptionList.observe(viewLifecycleOwner) {
+                if (it.isNullOrEmpty()) {
+                    showEmptyScreen()
+                } else {
+                    hideEmptyScreen()
+                    if (poolAdapter.getPollList().isEmpty()) {
+                        poolAdapter.setPoolData(it)
+                    }
 
-                Log.d(
-                    CurrentPollsFragment::class.java.name,
-                    "bindAdapter Poll Fragment 2: ${poolAdapter?.getPollList()?.isEmpty()}"
-                )
-
-                if (poolAdapter?.getPollList()!!.isEmpty()) {
-                    poolAdapter?.setPoolData(it)
                 }
-
             }
         }
+    }
+
+    private fun showEmptyScreen() {
+        _binding!!.poolList.visibility = View.GONE
+        _binding!!.emptyView.visibility = View.VISIBLE
+    }
+
+    private fun hideEmptyScreen() {
+        _binding!!.poolList.visibility = View.VISIBLE
+        _binding!!.emptyView.visibility = View.GONE
     }
 }

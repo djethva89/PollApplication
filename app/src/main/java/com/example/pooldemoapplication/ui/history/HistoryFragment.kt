@@ -19,15 +19,17 @@ class HistoryFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private lateinit var pollsViewModel: PollsViewModel
+
+    private lateinit var poolAdapter: PollListAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        val notificationsViewModel =
-//            ViewModelProvider(this)[NotificationsViewModel::class.java]
 
-        val pollsViewModel = ViewModelProvider(this)[PollsViewModel::class.java]
+        pollsViewModel = ViewModelProvider(this)[PollsViewModel::class.java]
 
         _binding = FragmentHistoryBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -40,25 +42,42 @@ class HistoryFragment : Fragment() {
         _binding = null
     }
 
-
     private fun bindAdapter(pollsViewModel: PollsViewModel) {
 
-        val poolAdapter = PollListAdapter(isHistoryView = true, pollsViewModel = pollsViewModel)
+        poolAdapter = PollListAdapter(isHistoryView = true, pollsViewModel = pollsViewModel)
 
         _binding!!.historyRecyclerview.adapter = poolAdapter
         _binding!!.historyRecyclerview.layoutManager = LinearLayoutManager(requireContext())
-        pollsViewModel.getPoolWithOption(requireContext(), isHistoryData = true)
-        pollsViewModel.pollsList!!.observe(
-            viewLifecycleOwner
-        ) {
-            if (it.isNullOrEmpty()) {
-                _binding!!.historyRecyclerview.visibility = View.GONE
-                _binding!!.emptyView.visibility = View.VISIBLE
-            } else {
-                _binding!!.historyRecyclerview.visibility = View.VISIBLE
-                binding.emptyView.visibility = View.GONE
-                poolAdapter.setPoolData(it)
+        getPollHistoryData()
+    }
+
+    private fun getPollHistoryData() {
+        with(pollsViewModel) {
+            clearPollList()
+            getPoolWithOption(
+                context = requireContext(),
+                isHistoryData = true,
+                viewLifecycleOwner = viewLifecycleOwner
+            )
+            pollWithOptionList.observe(viewLifecycleOwner) {
+                if (it.isNullOrEmpty()) {
+                    showEmptyScreen()
+                } else {
+                    hideEmptyScreen()
+                    poolAdapter.setPoolData(it)
+                }
             }
         }
     }
+
+    private fun showEmptyScreen() {
+        _binding!!.historyRecyclerview.visibility = View.GONE
+        _binding!!.emptyView.visibility = View.VISIBLE
+    }
+
+    private fun hideEmptyScreen() {
+        _binding!!.historyRecyclerview.visibility = View.VISIBLE
+        _binding!!.emptyView.visibility = View.GONE
+    }
+
 }
